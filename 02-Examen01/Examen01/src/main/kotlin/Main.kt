@@ -2,7 +2,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.io.File
-import java.io.Serializable
 
 data class Event(
     var id: Int,
@@ -11,58 +10,124 @@ data class Event(
     var capacity: Int,
     var registrationFee: Double,
     var athletes: MutableList<Athlete> = mutableListOf()
-) : Serializable
+)
 
 data class Athlete(
     var id: Int,
     var name: String,
     var age: Int,
     var isRegistered: Boolean,
-    var personalBest: Double,
-) : Serializable
+    var personalBest: Double
+)
 
 class EventAthleteManager {
-    private val eventsFile = "events.dat"
+    private val eventsFile = "events.txt"
+    private val athletesFile = "athletes.txt"
+    private val configFile = "config.txt"
     private var events = mutableListOf<Event>()
     private var lastEventId = 0
     private var lastAthleteId = 0
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     init {
+        loadConfig()
         loadData()
+    }
+
+    private fun loadConfig() {
+        try {
+            if (File(configFile).exists()) {
+                val config = File(configFile).readLines()
+                lastEventId = config[0].toInt()
+                lastAthleteId = config[1].toInt()
+            }
+        } catch (e: Exception) {
+            println("Error al cargar configuración: ${e.message}")
+            lastEventId = 0
+            lastAthleteId = 0
+        }
+    }
+
+    private fun saveConfig() {
+        try {
+            File(configFile).writeText("$lastEventId\n$lastAthleteId")
+        } catch (e: Exception) {
+            println("Error al guardar configuración: ${e.message}")
+        }
     }
 
     private fun saveData() {
         try {
-            File(eventsFile).outputStream().use { fos ->
-                java.io.ObjectOutputStream(fos).use { oos ->
-                    oos.writeObject(events)
+            // Guardar eventos
+            File(eventsFile).bufferedWriter().use { writer ->
+                events.forEach { event ->
+                    writer.write("${event.id}|${event.name}|${event.date}|${event.capacity}|${event.registrationFee}\n")
                 }
             }
-            println("\nDatos guardados exitosamente en $eventsFile")
+
+            // Guardar atletas
+            File(athletesFile).bufferedWriter().use { writer ->
+                events.forEach { event ->
+                    event.athletes.forEach { athlete ->
+                        writer.write("${event.id}|${athlete.id}|${athlete.name}|${athlete.age}|${athlete.isRegistered}|${athlete.personalBest}\n")
+                    }
+                }
+            }
+
+            // Guardar configuración
+            saveConfig()
+
+            println("\nDatos guardados exitosamente")
         } catch (e: Exception) {
             println("\nError al guardar los datos: ${e.message}")
         }
     }
 
     private fun loadData() {
+        events.clear()
         try {
+            // Cargar eventos
             if (File(eventsFile).exists()) {
-                File(eventsFile).inputStream().use { fis ->
-                    java.io.ObjectInputStream(fis).use { ois ->
-                        @Suppress("UNCHECKED_CAST")
-                        events = ois.readObject() as MutableList<Event>
-                        lastEventId = events.maxOfOrNull { it.id } ?: 0
-                        lastAthleteId = events.flatMap { it.athletes }.maxOfOrNull { it.id } ?: 0
-                        println("Datos cargados exitosamente desde $eventsFile")
+                File(eventsFile).useLines { lines ->
+                    lines.forEach { line ->
+                        val parts = line.split("|")
+                        if (parts.size == 5) {
+                            events.add(Event(
+                                id = parts[0].toInt(),
+                                name = parts[1],
+                                date = LocalDate.parse(parts[2]),
+                                capacity = parts[3].toInt(),
+                                registrationFee = parts[4].toDouble()
+                            ))
+                        }
                     }
                 }
-            } else {
-                println("No se encontró archivo de datos. Se iniciará con una lista vacía.")
             }
+
+            // Cargar atletas
+            if (File(athletesFile).exists()) {
+                File(athletesFile).useLines { lines ->
+                    lines.forEach { line ->
+                        val parts = line.split("|")
+                        if (parts.size == 6) {
+                            val eventId = parts[0].toInt()
+                            val event = events.find { it.id == eventId }
+                            event?.athletes?.add(Athlete(
+                                id = parts[1].toInt(),
+                                name = parts[2],
+                                age = parts[3].toInt(),
+                                isRegistered = parts[4].toBoolean(),
+                                personalBest = parts[5].toDouble()
+                            ))
+                        }
+                    }
+                }
+            }
+
+            println("Datos cargados exitosamente")
         } catch (e: Exception) {
             println("Error al cargar datos: ${e.message}")
-            events = mutableListOf()
+            events.clear()
         }
     }
 
@@ -224,7 +289,7 @@ class EventAthleteManager {
             println("Nombre: ${athlete.name}")
             println("Edad: ${athlete.age}")
             println("Registrado: ${if (athlete.isRegistered) "Si" else "No"}")
-            println("Mejor marca (en metros): ${athlete.personalBest}")
+            println("Mejor marca(en Km): ${athlete.personalBest}")
         }
     }
 
