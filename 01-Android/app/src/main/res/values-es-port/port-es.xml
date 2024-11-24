@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values-es/strings.xml (español portrait) -->
+<resources>
+    <string name="hello_text">¡Si quieres paz, prepárate para la guerra.!</string>
+    <color name="background">#FF9800</color>
+    <color name="saludo_color">#E91E63</color>
+</resources>

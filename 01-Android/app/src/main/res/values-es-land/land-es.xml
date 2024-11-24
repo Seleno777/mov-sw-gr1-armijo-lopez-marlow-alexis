@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values-es-land/strings.xml (español landscape) -->
+<resources>
+    <string name="hello_text">¡Si lo puedes soñar, lo puedes lograr.!</string>
+    <color name="background">#6E159B</color>
+    <color name="saludo_color">#0D6E83</color>
+</resources>

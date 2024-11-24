@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/strings.xml (inglés portrait) -->
+<resources>
+    <string name="hello_text">If you can dream it, you can do it!</string>
+    <color name="background">#4CAF50</color>
+    <color name="saludo_color">#FFEB3B</color>
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "178973578245",
+    "project_id": "mov-2024b-sw-gr1-maal",
+    "storage_bucket": "mov-2024b-sw-gr1-maal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178973578245:android:80669c0cefe1541eb8b86c",
+        "android_client_info": {
+          "package_name": "com.example.sw2024bgr1_maal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLbo_Of0S1onf8UI17QtE9K0qlPSV08kQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
